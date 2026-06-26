@@ -18,6 +18,26 @@ from .models import (
 
 
 # ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def absolute_image_url(request, field) -> str | None:
+    """
+    Return an absolute URL for a Django ImageField/FileField value.
+
+    - If the field has no file, returns None.
+    - If a request is available in serializer context, uses build_absolute_uri
+      so the URL works correctly in both dev and production.
+    - Falls back to the relative path when request is absent (e.g. shell tests).
+    """
+    if not field:
+        return None
+    if request:
+        return request.build_absolute_uri(field.url)
+    return field.url
+
+
+# ---------------------------------------------------------------------------
 # Profile
 # ---------------------------------------------------------------------------
 
@@ -28,15 +48,19 @@ class ProfileSerializer(serializers.ModelSerializer):
         "id": 1,
         "name": "Nabonsi Niguse",
         "title": "Full-Stack Software Engineer",
-        "bio_paragraphs": "paragraph one\nparagraph two",
+        "bio_paragraphs": "paragraph one\\nparagraph two",
         "avatar": "http://127.0.0.1:8000/media/profile/photo.jpg" | null,
         "is_available": true
       }
 
-    avatar is serialized as an absolute URL so the frontend <img> tag works
-    regardless of the deployment domain — no path-joining needed on the client.
+    Bug 1 fix: avatar is a SerializerMethodField that returns an absolute URL
+    via request.build_absolute_uri so it works in both dev and production.
+    The default ImageField would only return a relative path like /media/...
+    which breaks on any domain other than the one Vite is proxying.
     """
 
+    # Bug 1 fix: override the default ImageField with a method field
+    # that returns a fully-qualified URL rather than a relative path.
     avatar = serializers.SerializerMethodField()
 
     class Meta:
@@ -44,13 +68,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "title", "bio_paragraphs", "avatar", "is_available"]
 
     def get_avatar(self, obj: Profile) -> str | None:
-        if not obj.avatar:
-            return None
-        request = self.context.get("request")
-        if request:
-            return request.build_absolute_uri(obj.avatar.url)
-        # Fallback: return the relative path (works when proxied by Vite)
-        return obj.avatar.url
+        return absolute_image_url(self.context.get("request"), obj.avatar)
 
 
 # ---------------------------------------------------------------------------
@@ -72,22 +90,16 @@ class SkillGroupSerializer(serializers.ModelSerializer):
         "id": 1,
         "label": "Backend",           ← category (display value)
         "icon_name": "Code2",
-        "tags": ["Python", "Django"], ← flat string array (for static fallback)
-        "skills": [                   ← object array (for dynamic rendering)
+        "tags": ["Python", "Django"], ← flat string array
+        "skills": [                   ← object array for dynamic rendering
           { "id": 1, "name": "Python" },
           { "id": 2, "name": "Django" }
         ]
       }
-
-    Both `tags` (flat array) and `skills` (object array) are provided so the
-    frontend can use whichever shape it needs without a second request.
     """
 
-    # "label" is the camelCase alias the frontend uses (maps to model "category")
-    label = serializers.CharField(source="category")
-    # Flat string array — convenient for display, e.g. badge text
-    tags = serializers.SerializerMethodField()
-    # Object array with id — needed when the frontend renders dynamic icons or keys
+    label  = serializers.CharField(source="category")
+    tags   = serializers.SerializerMethodField()
     skills = SkillInlineSerializer(many=True, read_only=True)
 
     class Meta:
@@ -111,21 +123,23 @@ class ProjectSerializer(serializers.ModelSerializer):
         "id": 1,
         "title": "E-Learning Platform",
         "summary": "...",
-        "stack": ["Django", "React", ...],   ← parsed from comma-separated tags
-        "highlights": ["...", "..."],         ← parsed from newline-separated bullet_points
-        "githubUrl": "https://..." | null,   ← camelCase alias for github_link
-        "demoUrl": "https://..." | null,     ← camelCase alias for live_link
-        "image": "/media/projects/x.png" | null
+        "stack": ["Django", "React", ...],
+        "highlights": ["...", "..."],
+        "githubUrl": "https://..." | null,
+        "demoUrl":   "https://..." | null,
+        "image":     "http://host/media/projects/x.png" | null
       }
+
+    image uses absolute_image_url for the same reason as Profile.avatar —
+    the default ImageField serialization returns a relative path.
     """
 
-    # SerializerMethodFields parse stored text into clean arrays
-    stack = serializers.SerializerMethodField()
+    stack      = serializers.SerializerMethodField()
     highlights = serializers.SerializerMethodField()
-
-    # camelCase aliases — match the frontend Project interface exactly
-    githubUrl = serializers.URLField(source="github_link", allow_null=True)
-    demoUrl = serializers.URLField(source="live_link", allow_null=True)
+    githubUrl  = serializers.URLField(source="github_link", allow_null=True)
+    demoUrl    = serializers.URLField(source="live_link",   allow_null=True)
+    # Bug 1 (same root cause): absolute URL for project screenshot
+    image      = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -146,9 +160,10 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_highlights(self, obj: Project) -> list[str]:
         """Newline-separated bullet points → clean string array."""
-        return [
-            line.strip() for line in obj.bullet_points.splitlines() if line.strip()
-        ]
+        return [line.strip() for line in obj.bullet_points.splitlines() if line.strip()]
+
+    def get_image(self, obj: Project) -> str | None:
+        return absolute_image_url(self.context.get("request"), obj.image)
 
 
 # ---------------------------------------------------------------------------
@@ -165,18 +180,23 @@ class CertificationSerializer(serializers.ModelSerializer):
         "year": "2024",
         "verifyUrl": null,
         "description": "...",
-        "badge": "/media/certifications/badge.png" | null
+        "badge": "http://host/media/certifications/badge.png" | null
       }
+
+    badge uses absolute_image_url for the same reason as avatar/image.
     """
 
-    # "credential" is the frontend key; maps to the model's "title" field
     credential = serializers.CharField(source="title")
-    # "verifyUrl" camelCase alias for verify_link
-    verifyUrl = serializers.URLField(source="verify_link", allow_null=True)
+    verifyUrl  = serializers.URLField(source="verify_link", allow_null=True)
+    # Bug 1 (same root cause): absolute URL for certification badge
+    badge      = serializers.SerializerMethodField()
 
     class Meta:
         model = Certification
         fields = ["id", "issuer", "credential", "year", "verifyUrl", "description", "badge"]
+
+    def get_badge(self, obj: Certification) -> str | None:
+        return absolute_image_url(self.context.get("request"), obj.badge)
 
 
 # ---------------------------------------------------------------------------
@@ -189,16 +209,12 @@ class ExperienceSerializer(serializers.ModelSerializer):
       {
         "id": 1,
         "year": "2024",
-        "title": "WabiSkills Certification",   ← alias for model field "role"
+        "title": "WabiSkills Certification",
         "company": "WabiSkills",
         "description": "..."
       }
-
-    The frontend TimelineEntry interface uses { year, title, description }.
-    "title" is aliased from the model's "role" field so no frontend mapping needed.
     """
 
-    # "title" in the frontend maps to "role" in the model
     title = serializers.CharField(source="role")
 
     class Meta:
