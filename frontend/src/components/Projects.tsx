@@ -42,9 +42,28 @@ export function Projects() {
         )}
 
         {!loading && !error && (
-          <div className="reveal-children grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            className={[
+              'reveal-children grid gap-6',
+              // ≤1 project: single centered column
+              // 2 projects:  2 columns at md+
+              // 3 projects:  3 columns at lg+
+              // 4+ projects: 2 columns at md, 4 columns at xl (fills the row cleanly)
+              projects.length === 1
+                ? 'grid-cols-1 max-w-lg mx-auto'
+                : projects.length === 2
+                ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto'
+                : projects.length === 3
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
+            ].join(' ')}
+          >
             {projects.map((project, index) => (
-              <ProjectCard key={project.id ?? project.title} project={project} index={index} />
+              <ProjectCard
+                key={project.id != null ? project.id : `project-${index}`}
+                project={project}
+                index={index}
+              />
             ))}
           </div>
         )}
