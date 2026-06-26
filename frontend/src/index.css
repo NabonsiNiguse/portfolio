@@ -1,12 +1,15 @@
+/* ─────────────────────────────────────────────────
+   @import must come before @tailwind directives
+───────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────
-   Custom fonts via Google Fonts (Inter var)
+   BASE LAYER
 ───────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -33,9 +36,11 @@
   }
 }
 
-/* ─────────────────────────────────────────────────
-   Noise texture overlay (subtle grain for depth)
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   NOISE TEXTURE OVERLAY
+   Fixed pseudo-element — SVG fractalNoise at ~2.8%
+   opacity, barely perceptible grain for depth.
+═══════════════════════════════════════════════════ */
 body::before {
   content: '';
   position: fixed;
@@ -45,11 +50,14 @@ body::before {
   opacity: 0.028;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
+  background-repeat: repeat;
 }
 
-/* ─────────────────────────────────────────────────
-   Scroll progress bar
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+   Tracks scroll % via JS (width on .progress-fill).
+   Animated shimmer gradient sweeps left-to-right.
+═══════════════════════════════════════════════════ */
 .progress-bar {
   position: fixed;
   top: 0;
@@ -62,56 +70,209 @@ body::before {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #34d399, #60a5fa, #34d399);
+  background: linear-gradient(90deg, #34d399 0%, #60a5fa 50%, #34d399 100%);
   background-size: 200% 100%;
-  animation: shimmer 2.5s linear infinite;
+  animation: progressShimmer 2.5s linear infinite;
   border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 12px rgba(52, 211, 153, 0.5);
+  box-shadow:
+    0 0 8px rgba(52, 211, 153, 0.6),
+    0 0 20px rgba(52, 211, 153, 0.3);
   transition: width 0.1s linear;
+  will-change: width;
 }
 
-@keyframes shimmer {
+@keyframes progressShimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
 }
 
-/* ─────────────────────────────────────────────────
-   Ambient orbs (Hero background)
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   AMBIENT ORB ANIMATIONS
+   Slow-moving blurred gradient shapes for background
+   atmosphere. Three independent keyframe tracks.
+═══════════════════════════════════════════════════ */
 .orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(100px);
   pointer-events: none;
-  animation: orbFloat 14s ease-in-out infinite;
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
 .orb-emerald {
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(52, 211, 153, 0.06) 50%, transparent 80%);
-  animation-duration: 18s;
+  background: radial-gradient(
+    circle,
+    rgba(16, 185, 129, 0.18) 0%,
+    rgba(52, 211, 153, 0.07) 50%,
+    transparent 80%
+  );
+  animation: orbDrift1 18s ease-in-out infinite;
 }
 
 .orb-blue {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.14) 0%, rgba(96, 165, 250, 0.05) 50%, transparent 80%);
-  animation-duration: 22s;
-  animation-direction: reverse;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.14) 0%,
+    rgba(96, 165, 250, 0.05) 50%,
+    transparent 80%
+  );
+  animation: orbDrift2 22s ease-in-out infinite;
 }
 
 .orb-purple {
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-  animation-duration: 26s;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.12) 0%,
+    rgba(167, 139, 250, 0.04) 50%,
+    transparent 70%
+  );
+  animation: orbDrift3 26s ease-in-out infinite;
 }
 
-@keyframes orbFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(3%, 2%) scale(1.04); }
-  66%       { transform: translate(-2%, 3%) scale(0.97); }
+/* Each orb follows a unique path so they never move in sync */
+@keyframes orbDrift1 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  25%  { transform: translate(3%,  -2%)   scale(1.05); }
+  50%  { transform: translate(5%,   3%)   scale(0.97); }
+  75%  { transform: translate(-2%,  4%)   scale(1.03); }
+  100% { transform: translate(0,    0)    scale(1);    }
 }
 
-/* ─────────────────────────────────────────────────
-   Floating particles (Hero)
-───────────────────────────────────────────────── */
+@keyframes orbDrift2 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  33%  { transform: translate(-4%,  3%)   scale(1.06); }
+  66%  { transform: translate(2%,  -4%)   scale(0.96); }
+  100% { transform: translate(0,    0)    scale(1);    }
+}
+
+@keyframes orbDrift3 {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  20%  { transform: translate(2%,   5%)   scale(1.04); }
+  40%  { transform: translate(-3%,  2%)   scale(0.98); }
+  60%  { transform: translate(4%,  -3%)   scale(1.02); }
+  80%  { transform: translate(-1%,  4%)   scale(0.97); }
+  100% { transform: translate(0,    0)    scale(1);    }
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO GRID PATTERN
+   Subtle CSS grid lines using cross-hair background,
+   faded out toward edges with a radial mask.
+═══════════════════════════════════════════════════ */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    black 30%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 50%,
+    black 30%,
+    transparent 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL FORM INPUT — EMERALD FOCUS GLOW
+   Applied to .input-field class across all forms.
+═══════════════════════════════════════════════════ */
+.input-field {
+  background: rgba(15, 20, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #e2e8f0;
+  transition:
+    border-color 0.2s ease,
+    box-shadow   0.2s ease,
+    background   0.2s ease;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: rgba(148, 163, 184, 0.45);
+}
+
+.input-field:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(15, 20, 30, 0.95);
+}
+
+/* Emerald glow — multi-layer: inner ring + diffuse outer */
+.input-field:focus {
+  border-color: rgba(52, 211, 153, 0.55);
+  box-shadow:
+    0 0 0 3px  rgba(52, 211, 153, 0.12),
+    0 0 20px   rgba(52, 211, 153, 0.10),
+    0 0 40px   rgba(52, 211, 153, 0.05);
+  background: rgba(8, 14, 22, 1);
+}
+
+.input-field.error {
+  border-color: rgba(248, 113, 113, 0.55);
+  box-shadow:
+    0 0 0 3px rgba(248, 113, 113, 0.10),
+    0 0 20px  rgba(248, 113, 113, 0.06);
+}
+
+/* ═══════════════════════════════════════════════════
+   CUSTOM SCROLLBAR — WEBKIT
+   4px track, emerald thumb with smooth hover fade.
+   Firefox: thin scrollbar via scrollbar-width.
+═══════════════════════════════════════════════════ */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(52, 211, 153, 0.22) #080C12;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080C12;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-track:hover {
+  background: #0d1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(52, 211, 153, 0.22);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 211, 153, 0.45);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(52, 211, 153, 0.6);
+}
+
+::-webkit-scrollbar-corner {
+  background: #080C12;
+}
+
+/* ═══════════════════════════════════════════════════
+   FLOATING PARTICLES (Hero)
+═══════════════════════════════════════════════════ */
 .particle {
   position: absolute;
   border-radius: 50%;
@@ -121,15 +282,15 @@ body::before {
 }
 
 @keyframes particleFloat {
-  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  0%   { transform: translateY(0)      translateX(0);   opacity: 0;   }
   10%  { opacity: 1; }
   90%  { opacity: 0.6; }
   100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
 }
 
-/* ─────────────────────────────────────────────────
-   Typing cursor
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   TYPING CURSOR
+═══════════════════════════════════════════════════ */
 .typing-cursor::after {
   content: '|';
   animation: blink 1.1s step-end infinite;
@@ -143,9 +304,9 @@ body::before {
   50%       { opacity: 0; }
 }
 
-/* ─────────────────────────────────────────────────
-   Section heading accent line
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   SECTION HEADING ACCENT LINE
+═══════════════════════════════════════════════════ */
 .section-line {
   width: 48px;
   height: 3px;
@@ -154,9 +315,9 @@ body::before {
   margin-top: 4px;
 }
 
-/* ─────────────────────────────────────────────────
-   Card shimmer effect (border glow on hover)
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   CARD SHIMMER (border glow on hover)
+═══════════════════════════════════════════════════ */
 .card-shimmer {
   position: relative;
   isolation: isolate;
@@ -167,7 +328,12 @@ body::before {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0), rgba(96, 165, 250, 0), rgba(52, 211, 153, 0));
+  background: linear-gradient(
+    135deg,
+    rgba(52, 211, 153, 0),
+    rgba(96, 165, 250, 0),
+    rgba(52, 211, 153, 0)
+  );
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -176,17 +342,23 @@ body::before {
 
 .card-shimmer:hover::before {
   opacity: 1;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), rgba(96, 165, 250, 0.1), rgba(52, 211, 153, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(52, 211, 153, 0.15),
+    rgba(96, 165, 250, 0.10),
+    rgba(52, 211, 153, 0.05)
+  );
 }
 
-/* ─────────────────────────────────────────────────
-   Scroll reveal animations
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
   transform: translateY(32px);
-  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity   0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal.revealed {
@@ -197,8 +369,9 @@ body::before {
 .reveal-children > * {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity   0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-children.revealed > *,
@@ -207,30 +380,30 @@ body::before {
   transform: translateY(0);
 }
 
-.reveal-children.revealed > *:nth-child(1) { transition-delay: 0ms; }
-.reveal-children.revealed > *:nth-child(2) { transition-delay: 80ms; }
+.reveal-children.revealed > *:nth-child(1) { transition-delay:   0ms; }
+.reveal-children.revealed > *:nth-child(2) { transition-delay:  80ms; }
 .reveal-children.revealed > *:nth-child(3) { transition-delay: 160ms; }
 .reveal-children.revealed > *:nth-child(4) { transition-delay: 240ms; }
 .reveal-children.revealed > *:nth-child(5) { transition-delay: 320ms; }
 .reveal-children.revealed > *:nth-child(6) { transition-delay: 400ms; }
 
-/* ─────────────────────────────────────────────────
-   Hero elements stagger
-───────────────────────────────────────────────── */
-.hero-badge     { animation: slideUp 0.7s 0.1s cubic-bezier(0.22,1,0.36,1) both; }
-.hero-name      { animation: slideUp 0.8s 0.2s cubic-bezier(0.22,1,0.36,1) both; }
-.hero-role      { animation: slideUp 0.7s 0.35s cubic-bezier(0.22,1,0.36,1) both; }
-.hero-location  { animation: slideUp 0.7s 0.45s cubic-bezier(0.22,1,0.36,1) both; }
-.hero-ctas      { animation: slideUp 0.7s 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+/* ═══════════════════════════════════════════════════
+   HERO ELEMENT STAGGER
+═══════════════════════════════════════════════════ */
+.hero-badge    { animation: slideUp 0.7s 0.10s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-name     { animation: slideUp 0.8s 0.20s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-role     { animation: slideUp 0.7s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-location { animation: slideUp 0.7s 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-ctas     { animation: slideUp 0.7s 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* ─────────────────────────────────────────────────
-   Badge glow
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   BADGE GLOW
+═══════════════════════════════════════════════════ */
 .badge-glow {
   position: relative;
 }
@@ -240,7 +413,7 @@ body::before {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(52,211,153,0.4), rgba(96,165,250,0.3));
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.4), rgba(96, 165, 250, 0.3));
   opacity: 0;
   transition: opacity 0.3s;
   z-index: -1;
@@ -251,9 +424,9 @@ body::before {
   opacity: 1;
 }
 
-/* ─────────────────────────────────────────────────
-   Scroll indicator
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   SCROLL INDICATOR
+═══════════════════════════════════════════════════ */
 .scroll-indicator {
   position: absolute;
   bottom: 2.5rem;
@@ -271,9 +444,9 @@ body::before {
   to   { opacity: 1; }
 }
 
-/* ─────────────────────────────────────────────────
-   Timeline dot pulse
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   TIMELINE DOT PULSE
+═══════════════════════════════════════════════════ */
 .tl-dot::after {
   content: '';
   position: absolute;
@@ -284,21 +457,13 @@ body::before {
 }
 
 @keyframes tlPulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50%       { transform: scale(1.6); opacity: 0; }
+  0%, 100% { transform: scale(1);   opacity: 0.5; }
+  50%       { transform: scale(1.6); opacity: 0;   }
 }
 
-/* ─────────────────────────────────────────────────
-   Scrollbar
-───────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #080C12; }
-::-webkit-scrollbar-thumb { background: rgba(52,211,153,0.2); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(52,211,153,0.4); }
-
-/* ─────────────────────────────────────────────────
-   Btn primary animation
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   BUTTON PRIMARY SHIMMER
+═══════════════════════════════════════════════════ */
 .btn-primary-anim {
   position: relative;
   overflow: hidden;
@@ -308,7 +473,7 @@ body::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.25s;
 }
@@ -317,58 +482,9 @@ body::before {
   opacity: 1;
 }
 
-/* ─────────────────────────────────────────────────
-   Grid pattern for hero
-───────────────────────────────────────────────── */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
-}
-
-/* ─────────────────────────────────────────────────
-   Input focus ring
-───────────────────────────────────────────────── */
-.input-field {
-  background: rgba(15, 20, 30, 0.8);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  color: #e2e8f0;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  outline: none;
-}
-
-.input-field::placeholder {
-  color: rgba(148,163,184,0.45);
-}
-
-.input-field:hover {
-  border-color: rgba(255,255,255,0.14);
-  background: rgba(15, 20, 30, 0.95);
-}
-
-.input-field:focus {
-  border-color: rgba(52,211,153,0.5);
-  box-shadow: 0 0 0 3px rgba(52,211,153,0.1), 0 0 20px rgba(52,211,153,0.08);
-  background: rgba(8,14,22,1);
-}
-
-.input-field.error {
-  border-color: rgba(248, 113, 113, 0.5);
-  box-shadow: 0 0 0 3px rgba(248,113,113,0.08);
-}
-
-/* ─────────────────────────────────────────────────
-   Stat card counter glow
-───────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   STAT VALUE GRADIENT TEXT
+═══════════════════════════════════════════════════ */
 .stat-value {
   background: linear-gradient(135deg, #34d399 0%, #60a5fa 100%);
   -webkit-background-clip: text;
