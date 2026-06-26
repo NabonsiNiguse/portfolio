@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Github, Linkedin, ArrowRight, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, Github as GithubIcon, Linkedin, ArrowRight, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { PERSONAL } from '../data/content';
 import { SectionHeading } from './ui/SectionHeading';
 import { Button } from './ui/Button';
@@ -15,9 +15,9 @@ const CONTACT_LINKS = [
     bg:    'bg-emerald-500/10 border-emerald-500/15 group-hover:border-emerald-500/35 group-hover:shadow-[0_0_14px_rgba(52,211,153,0.15)]',
   },
   {
-    icon: Github,
+    icon: GithubIcon,
     label: 'GitHub',
-    value: 'github.com/nabonsi',
+    value: 'github.com/NabonsiNiguse',
     href: PERSONAL.github,
     color: 'text-slate-300',
     bg:    'bg-white/[0.05] border-white/[0.09] group-hover:border-white/20 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.06)]',
@@ -25,14 +25,14 @@ const CONTACT_LINKS = [
   {
     icon: Linkedin,
     label: 'LinkedIn',
-    value: 'linkedin.com/in/nabonsiniguse',
+    value: 'linkedin.com/in/nabonsi-niguse-8144953a8',
     href: PERSONAL.linkedin,
     color: 'text-blue-400',
     bg:    'bg-blue-500/[0.07] border-blue-500/12 group-hover:border-blue-500/30 group-hover:shadow-[0_0_14px_rgba(96,165,250,0.14)]',
   },
 ];
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type FormState = 'idle' | 'submitting' | 'success' | 'error' | 'rate_limited';
 
 interface FormData { name: string; email: string; message: string; }
 interface FormErrors { name?: string; email?: string; message?: string; }
@@ -81,6 +81,8 @@ export function Contact() {
       if (res.ok) {
         setStatus('success');
         setForm({ name: '', email: '', message: '' });
+      } else if (res.status === 429) {
+        setStatus('rate_limited');
       } else {
         setStatus('error');
       }
@@ -267,7 +269,31 @@ export function Contact() {
                       </div>
                     </div>
 
-                    {/* Error banner */}
+                    {/* Rate-limit banner (HTTP 429 — 5 submissions/day per IP) */}
+                    {status === 'rate_limited' && (
+                      <div
+                        role="alert"
+                        className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/[0.08] border border-amber-500/[0.25]"
+                      >
+                        <AlertCircle size={15} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-amber-400 text-sm font-semibold leading-snug">
+                            Daily message limit reached
+                          </p>
+                          <p className="text-amber-400/70 text-xs mt-0.5 leading-relaxed">
+                            The contact form allows 5 submissions per day. Email me directly at{' '}
+                            <a
+                              href={`mailto:${PERSONAL.email}`}
+                              className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+                            >
+                              {PERSONAL.email}
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Generic error banner */}
                     {status === 'error' && (
                       <div className="flex items-center gap-3 p-3.5 rounded-xl bg-red-500/[0.07] border border-red-500/20 text-red-400 text-sm">
                         <AlertCircle size={15} className="flex-shrink-0" />
