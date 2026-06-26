@@ -6,6 +6,14 @@
  *
  * In production, set VITE_API_BASE_URL in your .env to point at the deployed
  * backend (e.g. https://api.yourdomain.com).
+ *
+ * ── Endpoint contract (matches portfolio/urls.py router registrations) ──
+ *   GET  /api/profile/          → ProfileViewSet
+ *   GET  /api/skills/           → SkillGroupViewSet   (label field = category)
+ *   GET  /api/projects/         → ProjectViewSet
+ *   GET  /api/certifications/   → CertificationViewSet
+ *   GET  /api/experience/       → ExperienceViewSet
+ *   POST /api/contact/          → ContactInquiryViewSet (rate-limit: 5/day per IP)
  */
 export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
 

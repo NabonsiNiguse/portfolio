@@ -56,7 +56,7 @@ function BackToTop() {
           : 'opacity-0 translate-y-4 scale-90 pointer-events-none'
         }`}
     >
-      <ArrowUp size={17} />
+      <ArrowUp size={17} aria-hidden />
     </button>
   );
 }
@@ -107,7 +107,7 @@ export default function App() {
       <ScrollProgress />
       <Navbar />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Hero />
         <Section><About /></Section>
         <Section><Skills /></Section>
