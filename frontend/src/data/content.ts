@@ -36,9 +36,9 @@ export const PERSONAL = {
   role: 'Certified Full-Stack Developer',
   roleDetail: 'Django & React',
   location: 'Bale Robe, Ethiopia',
-  email: 'nabonsiniguse@gmail.com',
-  github: 'https://github.com/nabonsi',
-  linkedin: 'https://linkedin.com/in/nabonsiniguse',
+  email: 'nabonsin@gmail.com',
+  github: 'https://github.com/NabonsiNiguse',
+  linkedin: 'https://www.linkedin.com/in/nabonsi-niguse-8144953a8/',
   cvPath: '/cv-nabonsi-niguse.pdf',
   badges: ['Computer Science Student', 'Remote Ready'],
 };
@@ -83,7 +83,7 @@ export const PROJECTS: Project[] = [
       'Responsive video-lesson viewer and quiz module',
       'JWT authentication with token refresh flow',
     ],
-    githubUrl: 'https://github.com/nabonsi/elearning-platform',
+    githubUrl: 'https://github.com/NabonsiNiguse/elearning-platform',
     demoUrl: null,
   },
   {
@@ -97,7 +97,7 @@ export const PROJECTS: Project[] = [
       'Admin panel for inventory and order fulfillment management',
       'Paginated product listings with category filtering and search',
     ],
-    githubUrl: 'https://github.com/nabonsi/ecommerce-app',
+    githubUrl: 'https://github.com/NabonsiNiguse/ecommerce-app',
     demoUrl: null,
   },
   {
@@ -111,7 +111,7 @@ export const PROJECTS: Project[] = [
       'React admin UI for user search, suspension, and role assignment',
       'Audit log of authentication events and permission changes',
     ],
-    githubUrl: 'https://github.com/nabonsi/user-management-system',
+    githubUrl: 'https://github.com/NabonsiNiguse/user-management-system',
     demoUrl: null,
   },
 ];
