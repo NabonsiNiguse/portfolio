@@ -28,7 +28,7 @@ from .models import (
 # ---------------------------------------------------------------------------
 
 admin.site.site_header = "Nabonsi Portfolio — Admin"
-admin.site.site_title = "Portfolio Admin"
+admin.site.site_title  = "Portfolio Admin"
 admin.site.index_title = "Content Management"
 
 
@@ -42,11 +42,21 @@ class ProfileAdmin(admin.ModelAdmin):
     There should be exactly one profile record.
     Once it exists, the 'Add Profile' button is hidden to prevent duplicates.
     The frontend reads profile[0] from GET /api/profile/.
+
+    Bug 2 fix: added avatar_thumbnail to list_display so you see the actual
+    image in the list view instead of a useless boolean tick.
+
+    Bug 3 fix: added avatar_preview to readonly_fields and the "Profile Photo"
+    fieldset so you see a large preview below the upload widget in the detail
+    view. readonly_fields was previously an empty list which prevented this.
     """
 
-    list_display  = ["name", "title", "is_available", "has_avatar"]
+    # Bug 2 fix: replace the useless has_avatar boolean with a real thumbnail
+    list_display       = ["name", "title", "is_available", "avatar_thumbnail"]
     list_display_links = ["name"]
-    readonly_fields   = []
+
+    # Bug 3 fix: avatar_preview must be in readonly_fields to appear in fieldsets
+    readonly_fields    = ["avatar_preview"]
 
     fieldsets = (
         (
@@ -72,7 +82,9 @@ class ProfileAdmin(admin.ModelAdmin):
         (
             "Profile Photo",
             {
-                "fields": ("avatar",),
+                # avatar_preview sits below the upload widget so you see the
+                # current photo immediately without leaving the edit page.
+                "fields": ("avatar", "avatar_preview"),
                 "description": "Upload a square photo (min 400×400 px, JPG or PNG).",
             },
         ),
@@ -82,9 +94,32 @@ class ProfileAdmin(admin.ModelAdmin):
         """Prevent a second profile being created once one exists."""
         return not Profile.objects.exists()
 
-    @admin.display(description="Avatar", boolean=True)
-    def has_avatar(self, obj: Profile) -> bool:
-        return bool(obj.avatar)
+    # ------------------------------------------------------------------
+    # Bug 2 fix: clickable 40 px thumbnail in the list view
+    # ------------------------------------------------------------------
+    @admin.display(description="Photo")
+    def avatar_thumbnail(self, obj: Profile):
+        if not obj.avatar:
+            return "—"
+        return format_html(
+            '<img src="{}" width="40" height="40" '
+            'style="object-fit:cover;border-radius:6px;" />',
+            obj.avatar.url,
+        )
+
+    # ------------------------------------------------------------------
+    # Bug 3 fix: large preview inside the detail / edit view
+    # ------------------------------------------------------------------
+    @admin.display(description="Current Photo")
+    def avatar_preview(self, obj: Profile):
+        if not obj.avatar:
+            return "No photo uploaded yet."
+        return format_html(
+            '<img src="{}" width="160" height="160" '
+            'style="object-fit:cover;border-radius:10px;'
+            'border:1px solid #ddd;margin-top:6px;" />',
+            obj.avatar.url,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -97,22 +132,22 @@ class SkillInline(admin.TabularInline):
     Each row = one badge displayed on the Skills section.
     """
 
-    model = Skill
-    extra = 1
-    fields = ["name", "order"]
-    ordering = ["order", "name"]
+    model        = Skill
+    extra        = 1
+    fields       = ["name", "order"]
+    ordering     = ["order", "name"]
     verbose_name = "Skill Tag"
     verbose_name_plural = "Skill Tags  (each row = one badge on the frontend)"
 
 
 @admin.register(SkillGroup)
 class SkillGroupAdmin(admin.ModelAdmin):
-    inlines = [SkillInline]
-    list_display  = ["category", "icon_name", "order", "skill_count"]
-    list_editable  = ["icon_name", "order"]
+    inlines            = [SkillInline]
+    list_display       = ["category", "icon_name", "order", "skill_count"]
+    list_editable      = ["icon_name", "order"]
     list_display_links = ["category"]
-    ordering = ["order", "category"]
-    search_fields = ["category"]
+    ordering           = ["order", "category"]
+    search_fields      = ["category"]
 
     fieldsets = (
         (
@@ -139,11 +174,11 @@ class SkillGroupAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display  = ["title", "order", "has_github", "has_demo", "has_image"]
-    list_editable  = ["order"]
+    list_display       = ["title", "order", "has_github", "has_demo", "has_image"]
+    list_editable      = ["order"]
     list_display_links = ["title"]
-    ordering = ["order", "title"]
-    search_fields = ["title", "summary"]
+    ordering           = ["order", "title"]
+    search_fields      = ["title", "summary"]
 
     fieldsets = (
         (
@@ -159,7 +194,7 @@ class ProjectAdmin(admin.ModelAdmin):
                 "fields": ("tags",),
                 "description": (
                     "Comma-separated technology names exactly as they should appear "
-                    "on the badge row — e.g.  'Django, React, PostgreSQL, Tailwind CSS'."
+                    "on the badge row — e.g. 'Django, React, PostgreSQL, Tailwind CSS'."
                 ),
             },
         ),
@@ -179,9 +214,7 @@ class ProjectAdmin(admin.ModelAdmin):
             "Links",
             {
                 "fields": ("github_link", "live_link"),
-                "description": (
-                    "Leave blank if not available — the card shows a disabled placeholder."
-                ),
+                "description": "Leave blank if not available — the card shows a disabled placeholder.",
             },
         ),
         (
@@ -212,11 +245,11 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Certification)
 class CertificationAdmin(admin.ModelAdmin):
-    list_display  = ["title", "issuer", "year", "order", "has_badge", "has_verify_link"]
-    list_editable  = ["order"]
+    list_display       = ["title", "issuer", "year", "order", "has_badge", "has_verify_link"]
+    list_editable      = ["order"]
     list_display_links = ["title"]
-    ordering = ["order", "year"]
-    search_fields = ["title", "issuer"]
+    ordering           = ["order", "year"]
+    search_fields      = ["title", "issuer"]
 
     fieldsets = (
         (
@@ -256,11 +289,11 @@ class CertificationAdmin(admin.ModelAdmin):
 
 @admin.register(Experience)
 class ExperienceAdmin(admin.ModelAdmin):
-    list_display  = ["year", "role", "company", "order"]
-    list_editable  = ["order"]
+    list_display       = ["year", "role", "company", "order"]
+    list_editable      = ["order"]
     list_display_links = ["year", "role"]
-    ordering = ["order", "year"]
-    search_fields = ["role", "company", "year"]
+    ordering           = ["order", "year"]
+    search_fields      = ["role", "company", "year"]
 
     fieldsets = (
         (
@@ -285,31 +318,67 @@ class ExperienceAdmin(admin.ModelAdmin):
 
 
 # ---------------------------------------------------------------------------
-# Contact Inquiries — view & delete only, no add or edit
+# Contact Inquiries — read & delete only, no add or change
 # ---------------------------------------------------------------------------
 
 @admin.register(ContactInquiry)
 class ContactInquiryAdmin(admin.ModelAdmin):
     """
     Submissions arrive exclusively via the public API contact form.
-    Read and delete are allowed; add and change are not.
+    Admins can READ the full detail and DELETE entries, but cannot add or edit.
+
+    Bug 4 fix: the previous has_change_permission returning False caused a 403
+    when an admin clicked an inquiry to read it, because Django uses the change
+    view to render the read-only detail page.
+
+    The correct pattern is:
+      - has_change_permission → True  (allows opening the detail page)
+      - get_readonly_fields   → all fields (makes the form fully read-only)
+      - has_add_permission    → False (hides the Add button)
+
+    This way the admin can click an inquiry and read the full message without
+    being able to save any edits — because every field is readonly.
     """
 
-    list_display  = ["name", "email", "short_message", "created_at"]
+    list_display       = ["name", "email", "short_message", "created_at"]
     list_display_links = ["name", "email"]
-    ordering = ["-created_at"]
-    search_fields = ["name", "email"]
-    readonly_fields = ["name", "email", "message", "created_at"]
-    date_hierarchy = "created_at"
+    ordering           = ["-created_at"]
+    search_fields      = ["name", "email"]
+    date_hierarchy     = "created_at"
+
+    # Base set of readonly fields (always readonly regardless of obj state)
+    readonly_fields    = ["name", "email", "message", "created_at"]
 
     def has_add_permission(self, request) -> bool:
+        # Submissions come in via the API — never manually
         return False
 
     def has_change_permission(self, request, obj=None) -> bool:
-        return False
+        # Bug 4 fix: must return True so Django renders the detail/change view.
+        # The form is effectively read-only because get_readonly_fields returns
+        # all fields, and the Save button is hidden via the save_model override.
+        return True
 
     def has_delete_permission(self, request, obj=None) -> bool:
         return True
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Bug 4 fix: when viewing an existing inquiry, every field is readonly.
+        This makes the change view behave as a pure read view without returning
+        a 403 that would prevent the admin from opening the record at all.
+        """
+        if obj:
+            # All model fields locked — nothing can be saved
+            return ["name", "email", "message", "created_at"]
+        return self.readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        """
+        Bug 4 fix: belt-and-suspenders guard. Even if something bypasses
+        get_readonly_fields, the record is never overwritten.
+        """
+        pass  # intentional no-op — ContactInquiry records are immutable
 
     @admin.display(description="Message Preview")
     def short_message(self, obj: ContactInquiry) -> str:
