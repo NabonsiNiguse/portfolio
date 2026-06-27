@@ -29,8 +29,12 @@ environ.Env.read_env(BASE_DIR / ".env")
 # Core
 # ---------------------------------------------------------------------------
 SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+
+# Render ላይ ከሆነ DEBUG ሁልጊዜ False እንዲሆን፣ ኮምፒውተርህ ላይ ከሆነ True እንዲሆን ያደርጋል
+DEBUG = os.environ.get("DEBUG", "True").lower() in ["true", "1"]
+
+# Render የሚሰጥህን የዌብሳይት ስም በራስ-ሰር እንዲቀበል ያደርጋል
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
 
 # ---------------------------------------------------------------------------
 # Applications
@@ -92,14 +96,21 @@ ASGI_APPLICATION = "config.asgi.application"
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
-
-# ለጊዜው ኮምፒውተርህ ላይ ስትሰራ SQLite እንዲጠቀም፣ Render ላይ ሲሆን ግን Supabase እንዲያነብ ያደርጋል
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
-        conn_max_age=600
-    )
-}
+# በ Render ላይ DATABASE_URL ካለ እሱን ይጠቀማል፣ ከሌለ (ኮምፒውተርህ ላይ) ወደ SQLite ይመለሳል
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # ---------------------------------------------------------------------------
 # Password validation
