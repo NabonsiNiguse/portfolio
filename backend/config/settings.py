@@ -96,7 +96,6 @@ ASGI_APPLICATION = "config.asgi.application"
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
-# በ Render ላይ DATABASE_URL ካለ እሱን ይጠቀማል፣ ከሌለ (ኮምፒውተርህ ላይ) ወደ SQLite ይመለሳል
 if os.environ.get("DATABASE_URL"):
     DATABASES = {
         'default': dj_database_url.config(
@@ -117,7 +116,7 @@ else:
 # ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MiddleLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
@@ -142,35 +141,33 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------------------------------
-# CORS
+# CORS & CSRF Settings (ለመገናኘት የተስተካከሉ)
 # ---------------------------------------------------------------------------
-CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+CORS_ALLOW_ALL_ORIGINS = True  # ፍሮንትአንዱ ያለምንም ኤረር እንዲያገኘው ያደርጋል
 CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["content-type", "accept", "origin", "x-requested-with"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://portfolio-82mu.onrender.com",
+]
 
 # ---------------------------------------------------------------------------
 # Django REST Framework
 # ---------------------------------------------------------------------------
 REST_FRAMEWORK = {
-    # No authentication required for public read endpoints
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
-    # Global throttling — tightened per-view for the contact endpoint
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        # Public read endpoints: generous limit
         "anon": "200/day",
-        # Contact endpoint: strict limit (applied via custom throttle class)
         "contact": "5/day",
     },
-    # Pagination disabled globally; all list endpoints return full arrays
     "DEFAULT_PAGINATION_CLASS": None,
     "PAGE_SIZE": None,
-    # Clean JSON renderer only — no browsable API in production
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ]
