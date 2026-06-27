@@ -86,70 +86,65 @@ export function About() {
         )}
 
         {!loading && (
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
             {/* ────────────── LEFT COLUMN: Photo + Stats ─────────────── */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-4 flex flex-col items-center lg:items-start gap-6">
 
-              {/* ── Profile photo frame ── */}
-              <div className="relative group mx-auto max-w-[340px] lg:max-w-none">
-                {/* Animated gradient border glow */}
-                <div className="absolute -inset-[3px] bg-gradient-to-br from-emerald-400 via-blue-500 to-violet-500
-                  rounded-2xl opacity-30 group-hover:opacity-60 blur-[6px] transition-all duration-500" />
-                <div className="absolute -inset-[1.5px] bg-gradient-to-br from-emerald-400 via-blue-500 to-violet-500
-                  rounded-2xl opacity-50 group-hover:opacity-80 transition-all duration-500" />
+              {/* ── Profile photo — compact square avatar card ── */}
+              <div className="relative group mx-auto w-48 lg:w-56">
+                {/* Subtle gradient border ring */}
+                <div className="absolute -inset-[2px] bg-gradient-to-br from-emerald-400 via-blue-500 to-violet-500
+                  rounded-2xl opacity-40 group-hover:opacity-70 blur-[3px] transition-all duration-500" />
 
-                <div className="relative aspect-[4/5] rounded-2xl overflow-hidden
+                <div className="relative aspect-square rounded-2xl overflow-hidden
                   border border-white/[0.15] bg-slate-900
-                  shadow-[0_8px_40px_rgba(0,0,0,0.6),0_0_80px_rgba(52,211,153,0.08)]">
+                  shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
 
                   {avatarSrc ? (
                     <img
                       src={avatarSrc}
-                      alt={`${displayName} — portfolio photo`}
-                      className="w-full h-full object-cover object-center
-                        group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                      alt={`${displayName} — profile photo`}
+                      className="w-full h-full object-cover object-top
+                        group-hover:scale-[1.04] transition-transform duration-700 ease-out"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-4
-                      bg-gradient-to-br from-slate-800 via-slate-900 to-slate-900">
-                      <div className="p-6 rounded-full bg-emerald-500/15 border-2 border-emerald-500/30">
-                        <User size={56} className="text-emerald-400" aria-hidden />
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2
+                      bg-gradient-to-br from-slate-800 to-slate-900">
+                      <div className="p-4 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+                        <User size={36} className="text-emerald-400" aria-hidden />
                       </div>
-                      <span className="text-5xl font-black text-white tracking-tight select-none">
-                        {initials}
-                      </span>
-                      <p className="text-slate-400 text-sm font-medium">Add photo in Admin panel</p>
+                      <span className="text-3xl font-black text-white select-none">{initials}</span>
                     </div>
                   )}
 
                   {/* Bottom vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
 
-                  {/* Overlay badges */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                  {/* Availability dot — compact, bottom-left only */}
+                  <div className="absolute bottom-3 left-3">
                     <span className={[
-                      'inline-flex items-center gap-1.5 text-[10px] font-bold',
-                      'px-2.5 py-1.5 rounded-lg uppercase tracking-wider border backdrop-blur-sm',
+                      'inline-flex items-center gap-1 text-[9px] font-bold',
+                      'px-2 py-1 rounded-md uppercase tracking-wider border backdrop-blur-sm',
                       isAvailable
-                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.3)]'
+                        ? 'bg-emerald-500/25 border-emerald-500/40 text-emerald-300'
                         : 'bg-slate-500/20 border-slate-500/30 text-slate-300',
                     ].join(' ')}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
-                      {isAvailable ? 'Available for Hire' : 'Currently Busy'}
-                    </span>
-                    <span className="text-[9px] text-white/60 font-mono tracking-widest
-                      px-2 py-1 rounded-md bg-white/[0.08] border border-white/[0.12] backdrop-blur-sm">
-                      REMOTE
+                      <span className={`w-1 h-1 rounded-full ${isAvailable ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      {isAvailable ? 'Available' : 'Busy'}
                     </span>
                   </div>
                 </div>
+
+                {/* Name + title beneath the photo */}
+                <div className="mt-3 text-center">
+                  <p className="text-white font-bold text-sm tracking-tight">{displayName}</p>
+                  <p className="text-slate-400 text-xs mt-0.5">Full-Stack Developer</p>
+                </div>
               </div>
 
-              {/* ── Stats grid ──────────────────────────────────────────
-                  bg-slate-900/85 | border-white/[0.12] | emerald under-glow
-              ──────────────────────────────────────────────────────── */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* ── Stats grid ── */}
+              <div className="grid grid-cols-2 gap-2.5 w-full">
                 {STATS.map(({ value, suffix, label }) => (
                   <div
                     key={label}
@@ -185,7 +180,7 @@ export function About() {
             </div>
 
             {/* ────────────── RIGHT COLUMN: Bio + Highlights + Location ── */}
-            <div className="lg:col-span-7 flex flex-col gap-7">
+            <div className="lg:col-span-8 flex flex-col gap-7">
 
               {/* API fallback notice */}
               {fetchFailed && (

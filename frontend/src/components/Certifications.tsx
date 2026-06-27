@@ -11,6 +11,7 @@ interface CertificationData {
   description: string;
   year: string;
   verifyUrl: string | null;
+  badge: string | null;   // absolute URL from Django media — serializer: get_badge()
 }
 
 export function Certifications() {
@@ -106,17 +107,33 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
 
       {/* ── Header row ── */}
       <div className="relative flex items-start justify-between gap-4">
-        {/* Icon wrapper — blue accent */}
-        <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/15 to-violet-500/8
-          border border-blue-500/[0.14]
-          group-hover:border-blue-500/35
-          group-hover:shadow-[0_0_20px_rgba(96,165,250,0.22)]
-          transition-all duration-300">
-          <Award
-            size={22}
-            className="text-blue-400 group-hover:scale-110 transition-transform duration-300"
-            aria-hidden
-          />
+        {/* Badge image or Award icon fallback */}
+        <div className="flex-shrink-0">
+          {cert.badge ? (
+            <div className="w-14 h-14 rounded-xl overflow-hidden
+              border border-blue-500/[0.20] bg-slate-800
+              shadow-[0_0_16px_rgba(96,165,250,0.15)]
+              group-hover:shadow-[0_0_24px_rgba(96,165,250,0.28)]
+              transition-all duration-300">
+              <img
+                src={cert.badge}
+                alt={`${cert.issuer} badge`}
+                className="w-full h-full object-contain p-1.5"
+              />
+            </div>
+          ) : (
+            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/15 to-violet-500/8
+              border border-blue-500/[0.14]
+              group-hover:border-blue-500/35
+              group-hover:shadow-[0_0_20px_rgba(96,165,250,0.22)]
+              transition-all duration-300">
+              <Award
+                size={22}
+                className="text-blue-400 group-hover:scale-110 transition-transform duration-300"
+                aria-hidden
+              />
+            </div>
+          )}
         </div>
 
         {/* Year + verified badge */}
