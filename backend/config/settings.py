@@ -6,6 +6,7 @@ Driven by environment variables via django-environ.
 from pathlib import Path
 import environ
 import os 
+import dj_database_url
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -91,8 +92,13 @@ ASGI_APPLICATION = "config.asgi.application"
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
+
+# ለጊዜው ኮምፒውተርህ ላይ ስትሰራ SQLite እንዲጠቀም፣ Render ላይ ሲሆን ግን Supabase እንዲያነብ ያደርጋል
 DATABASES = {
-    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+    'default': dj_database_url.config(
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
+        conn_max_age=600
+    )
 }
 
 # ---------------------------------------------------------------------------
