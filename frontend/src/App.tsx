@@ -64,28 +64,43 @@ function BackToTop() {
 /* ── Intersection-based reveal ── */
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-            // Also trigger children stagger
-            const children = entry.target.querySelectorAll('.reveal-children');
-            children.forEach(c => c.classList.add('revealed'));
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
-    );
+    // Small delay lets async-fetched content paint before we measure.
+    // Without this, the observer fires on a near-empty skeleton, disconnects,
+    // and never re-fires when the real cards render.
+    const timer = setTimeout(() => {
+      const revealEl = el.querySelector('.reveal') as HTMLElement | null;
+      if (!revealEl) return;
 
-    const targets = el.querySelectorAll('.reveal, .reveal-children');
-    targets.forEach(t => observer.observe(t));
-    return () => observer.disconnect();
+      const observer = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              // Stagger children grids inside this section
+              const grids = (entry.target as HTMLElement).querySelectorAll('.reveal-children');
+              grids.forEach(g => g.classList.add('revealed'));
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        // Generous rootMargin — fires well before the section hits the viewport
+        // edge so content is visible without needing to scroll far.
+        { threshold: 0, rootMargin: '0px 0px -60px 0px' }
+      );
+
+      observer.observe(revealEl);
+
+      // If already in viewport at mount (e.g. page refresh partway down),
+      // the observer fires synchronously. If not in viewport, it waits.
+      return () => observer.disconnect();
+    }, 120); // 120 ms — enough for one React render cycle + API state update
+
+    return () => clearTimeout(timer);
   }, []);
 
   return ref;

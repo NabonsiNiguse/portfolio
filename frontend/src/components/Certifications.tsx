@@ -100,7 +100,7 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
       {/* ── Diagonal ambient blob ── */}
       <div
         className="absolute -top-12 -right-12 w-40 h-40 rounded-full blur-2xl
-          bg-blue-500/[0.04] group-hover:bg-blue-500/[0.08] transition-all duration-500"
+          bg-blue-500/[0.07] group-hover:bg-blue-500/[0.12] transition-all duration-500"
         aria-hidden
       />
 
@@ -121,11 +121,11 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
 
         {/* Year + verified badge */}
         <div className="flex flex-col items-end gap-1.5">
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 tracking-[0.18em] uppercase">
-            <ShieldCheck size={10} className="text-blue-400/70" aria-hidden />
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 tracking-[0.18em] uppercase">
+            <ShieldCheck size={10} className="text-blue-400" aria-hidden />
             Verified
           </span>
-          <span className="text-xs font-bold text-slate-500 tracking-[0.14em] uppercase">
+          <span className="text-xs font-bold text-slate-300 tracking-[0.14em] uppercase">
             {cert.year}
           </span>
         </div>
@@ -133,8 +133,8 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
 
       {/* ── Title block ── */}
       <div className="relative">
-        {/* Issuer label — blue accent */}
-        <p className="text-[10px] font-black tracking-[0.22em] text-blue-400/80 uppercase mb-2">
+        {/* Issuer label — blue accent, full opacity */}
+        <p className="text-[10px] font-black tracking-[0.22em] text-blue-400 uppercase mb-2">
           {cert.issuer}
         </p>
         {/* Credential title: drop-shadow on hover (exact spec) */}
@@ -157,7 +157,7 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
       </p>
 
       {/* ── Footer ── */}
-      <div className="relative flex items-center justify-between pt-4 border-t border-white/[0.06]">
+      <div className="relative flex items-center justify-between pt-4 border-t border-white/[0.12]">
         {/* Blue progress dots */}
         <div className="flex gap-1.5">
           {[...Array(4)].map((_, k) => (
@@ -166,8 +166,8 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
               className={[
                 'h-1 rounded-full transition-all duration-500',
                 k < 3
-                  ? 'bg-blue-400/50 group-hover:bg-blue-400'
-                  : 'bg-white/10 group-hover:bg-white/20',
+                  ? 'bg-blue-400/60 group-hover:bg-blue-400'
+                  : 'bg-white/15 group-hover:bg-white/30',
               ].join(' ')}
               style={{
                 width: k < 3 ? '20px' : '8px',
@@ -184,8 +184,8 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
             href={cert.verifyUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400
-              hover:text-blue-300 transition-colors group/link
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300
+              hover:text-white transition-colors group/link
               focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded"
           >
             Verify
@@ -196,7 +196,7 @@ function CertCard({ cert, index }: { cert: CertificationData; index: number }) {
             />
           </a>
         ) : (
-          <span className="text-[10px] text-slate-700 font-medium italic">In progress</span>
+          <span className="text-[10px] text-slate-500 font-medium italic">In progress</span>
         )}
       </div>
     </div>

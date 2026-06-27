@@ -249,7 +249,7 @@ export function Skills() {
                         />
                       ))}
                     </div>
-                    <span className="text-[10px] text-slate-600 ml-auto font-medium">
+                    <span className="text-[10px] text-slate-400 ml-auto font-medium">
                       {group.tags.length} skills
                     </span>
                   </div>

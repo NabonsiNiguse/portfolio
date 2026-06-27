@@ -352,13 +352,16 @@ body::before {
 
 /* ═══════════════════════════════════════════════════
    SCROLL REVEAL
+   Sections animate in when scrolled into view.
+   The .revealed class is added by IntersectionObserver
+   in App.tsx. Cards inside reveal-children stagger in.
 ═══════════════════════════════════════════════════ */
 .reveal {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(28px);
   transition:
-    opacity   0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity   0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal.revealed {
@@ -366,12 +369,21 @@ body::before {
   transform: translateY(0);
 }
 
+/* Fallback: if JS never fires, still show content after 1.5s */
+.reveal {
+  animation: revealFallback 0s 1.5s forwards;
+}
+
+@keyframes revealFallback {
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .reveal-children > * {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(20px);
   transition:
-    opacity   0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity   0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-children.revealed > *,
@@ -380,12 +392,20 @@ body::before {
   transform: translateY(0);
 }
 
+/* Stagger delays for up to 8 children */
 .reveal-children.revealed > *:nth-child(1) { transition-delay:   0ms; }
 .reveal-children.revealed > *:nth-child(2) { transition-delay:  80ms; }
 .reveal-children.revealed > *:nth-child(3) { transition-delay: 160ms; }
 .reveal-children.revealed > *:nth-child(4) { transition-delay: 240ms; }
 .reveal-children.revealed > *:nth-child(5) { transition-delay: 320ms; }
 .reveal-children.revealed > *:nth-child(6) { transition-delay: 400ms; }
+.reveal-children.revealed > *:nth-child(7) { transition-delay: 480ms; }
+.reveal-children.revealed > *:nth-child(8) { transition-delay: 560ms; }
+
+/* Fallback for reveal-children too */
+.reveal-children > * {
+  animation: revealFallback 0s 2s forwards;
+}
 
 /* ═══════════════════════════════════════════════════
    HERO ELEMENT STAGGER
