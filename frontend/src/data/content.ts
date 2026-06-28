@@ -1,6 +1,14 @@
 import { Code2, Database, Globe, Network } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+// ── Local asset imports ───────────────────────────────────────────────────
+import certStem        from '../assets/stem.png';        // STEM Power certificate
+import certWabiSkills  from '../assets/wabiskill.jpg';   // WabiSkills certificate
+import certUdacity     from '../assets/Udacity.png';     // Udacity certificate
+import portfolioPhoto  from '../assets/portfolio.png';   // profile photo
+
+export { certStem, certWabiSkills, certUdacity, portfolioPhoto };
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Primitive interfaces (used by static data below AND by legacy component props)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,7 +90,7 @@ export interface ExperienceData {
 
 export const PERSONAL = {
   name:       'Nabonsi Niguse',
-  wordmark:   'NN.DEV',
+  wordmark:   'Portfolio',
   role:       'Certified Full-Stack Developer',
   roleDetail: 'Django & React',
   location:   'Bale Robe, Ethiopia',
@@ -98,13 +106,13 @@ export const PERSONAL = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const PROFILE = {
-  name:          'Nabonsi Niguse',
-  title:         'Full-Stack Software Engineer',
-  is_available:  true,
+  name:         'Nabonsi Niguse',
+  title:        'Full-Stack Software Engineer',
+  is_available: true,
   bio: [
-    `I'm a dedicated Full-Stack Software Engineer and Computer Science student based in Bale Robe, Ethiopia. I specialise in architecting secure, high-performance web applications — from database schema design all the way to polished React interfaces.`,
-    `My core expertise is backend development with Django and Django REST Framework: production-grade REST APIs, custom auth workflows, and robust PostgreSQL data models. On the frontend I reach for React and TypeScript to build fast, accessible SPAs.`,
-    `Driven by clean architecture and continuous growth, I write production-ready code optimised for security, scalability, and international remote engineering roles.`,
+    `I'm a self-driven Full-Stack Software Engineer and Computer Science student based in Bale Robe, Ethiopia. I specialise in building secure, high-performance web applications — from backend architecture to polished React interfaces.`,
+    `My backend foundation was built through the STEM Power STEMpreneurship Program, where I studied Django and Python and collaborated on a real-world software project. I later earned my WabiSkills Full-Stack certification, mastering the MERN stack — MongoDB, Express.js, React, and Node.js — in 2025.`,
+    `I write clean, production-ready code optimised for security, scalability, and international remote engineering roles. Whether it's a Django REST API or a React SPA, I build to ship.`,
   ],
 } as const;
 
@@ -117,11 +125,13 @@ export const SKILL_GROUPS: SkillGroupData[] = [
     id:        1,
     label:     'Backend',
     icon_name: 'Code2',
-    tags:      ['Python', 'Django', 'Django REST Framework'],
+    tags:      ['Python', 'Django', 'Node.js', 'Express.js', 'Django REST Framework'],
     skills:    [
       { id: 1, name: 'Python' },
       { id: 2, name: 'Django' },
       { id: 3, name: 'Django REST Framework' },
+      { id: 4, name: 'Node.js' },
+      { id: 5, name: 'Express.js' },
     ],
   },
   {
@@ -141,11 +151,12 @@ export const SKILL_GROUPS: SkillGroupData[] = [
     id:        3,
     label:     'Database',
     icon_name: 'Database',
-    tags:      ['SQL', 'PostgreSQL', 'MySQL'],
+    tags:      ['SQL', 'PostgreSQL', 'MySQL', 'MongoDB'],
     skills:    [
       { id: 9,  name: 'SQL' },
       { id: 10, name: 'PostgreSQL' },
       { id: 11, name: 'MySQL' },
+      { id: 12, name: 'MongoDB' },
     ],
   },
   {
@@ -240,23 +251,33 @@ export const PROJECTS_DATA: ProjectApiData[] = [
 export const CERTIFICATIONS_DATA: CertificationData[] = [
   {
     id:          1,
-    issuer:      'STEM Power',
-    credential:  'Full-Stack Development Project Experience',
-    year:        '2024',
-    verifyUrl:   null,
-    badge:       null,
+    issuer:      'STEM Power & Case Western Reserve University',
+    credential:  'STEMpreneurship Software Development Certificate',
+    year:        '2025',
+    verifyUrl:   'https://www.stempower.org',
+    badge:       certStem,
     description:
-      'Hands-on project work within the STEM Power program, contributing to real-world software development tasks across frontend, backend, and database layers.',
+      'Completed the STEMpreneurship Outreach Program (64 hours) in Software Development, in collaboration with STEM Power Ethiopia, Case Western Reserve University, and Madda Walabu University STEM Center. Studied Django, built a collaborative project, and presented a live demo.',
   },
   {
     id:          2,
     issuer:      'WabiSkills',
-    credential:  'Certified Full-Stack Developer — Django & React',
-    year:        '2024',
-    verifyUrl:   null,
-    badge:       null,
+    credential:  'Certified Full-Stack Developer — MERN Stack & React',
+    year:        '2025',
+    verifyUrl:   'https://www.wabiskills.com',
+    badge:       certWabiSkills,
     description:
-      'Industry-recognised certification validating proficiency in Django REST API development, React application architecture, and full-stack integration patterns.',
+      'Industry-recognised certification validating proficiency in the MERN stack (MongoDB, Express.js, React, Node.js) and modern React application architecture, including component design, state management, and REST API integration.',
+  },
+  {
+    id:          3,
+    issuer:      'Udacity',
+    credential:  'Programming Concepts & Problem Solving',
+    year:        '2024',
+    verifyUrl:   'https://www.udacity.com',
+    badge:       certUdacity,
+    description:
+      'Earned the Udacity certificate in Programming Concepts and Problem Solving — covering core computational thinking, algorithmic problem decomposition, data structures, and writing clean, logical code across real programming challenges.',
   },
 ];
 
@@ -284,18 +305,18 @@ export const EXPERIENCE_DATA: ExperienceData[] = [
   {
     id:          3,
     year:        '2023',
-    title:       'STEM Power Project Work',
-    company:     'STEM Power',
+    title:       'STEM Power — Django & Collaboration',
+    company:     'STEM Power Ethiopia / Case Western Reserve University',
     description:
-      'Joined STEM Power, contributing to real project deliverables — applying full-stack skills in a collaborative, goal-driven environment alongside professional peers.',
+      'Joined the STEMpreneurship Outreach Program, studying Django and Python-based backend development through 64 hours of lectures, hands-on training, and collaborative project work — concluding with a live demo presentation.',
   },
   {
     id:          4,
-    year:        '2024',
-    title:       'WabiSkills Certification',
+    year:        '2025',
+    title:       'WabiSkills — MERN Stack Certification',
     company:     'WabiSkills',
     description:
-      'Earned the WabiSkills Certified Full-Stack Developer credential, validating Django + React expertise and readiness for professional remote engagements.',
+      'Earned the WabiSkills Full-Stack Developer certification, mastering the MERN stack: MongoDB, Express.js, React, and Node.js — validating modern JavaScript full-stack development skills for professional remote work.',
   },
   {
     id:          5,
