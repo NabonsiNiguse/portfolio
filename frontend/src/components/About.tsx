@@ -1,20 +1,19 @@
 import { CheckCircle2, MapPin, User } from 'lucide-react';
 import { SectionHeading } from './ui/SectionHeading';
-import heroImg from '../assets/hero.png';
-import { PROFILE, PERSONAL } from '../data/content';
+import { PROFILE, PERSONAL, portfolioPhoto } from '../data/content';
 
 const STATS = [
   { value: '3+',  suffix: '',  label: 'Years Coding'    },
   { value: '4',   suffix: '',  label: 'Full-Stack Apps' },
-  { value: '2',   suffix: '',  label: 'Verified Certs'  },
+  { value: '3',   suffix: '',  label: 'Verified Certs'  },
   { value: '100', suffix: '%', label: 'Remote Ready'    },
 ] as const;
 
 const HIGHLIGHTS = [
-  'Production-grade Django REST APIs',
+  'Django REST APIs & Python Backend Development',
+  'MERN Stack — MongoDB, Express, React, Node.js',
   'React + TypeScript SPA Architecture',
   'PostgreSQL & Relational Database Design',
-  'Secure API Authentication & Optimization',
 ] as const;
 
 export function About() {
@@ -22,7 +21,7 @@ export function About() {
   const isAvailable  = PROFILE.is_available;
   const paragraphs   = PROFILE.bio;
   const initials     = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
-  const avatarSrc    = heroImg; // swap for your own photo path anytime
+  const avatarSrc    = portfolioPhoto; // portfolio.png from assets
 
   return (
     <section id="about" className="py-24 lg:py-32 relative overflow-hidden">
