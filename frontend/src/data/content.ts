@@ -173,7 +173,7 @@ export const SKILL_GROUPS: SkillGroupData[] = [
   },
 ];
 
-/// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // PROJECTS
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -190,7 +190,7 @@ export const PROJECTS_DATA: ProjectApiData[] = [
       'Responsive video-lesson viewer and quiz module',
       'JWT authentication with token refresh flow',
     ],
-    githubUrl: 'https://github.com/NabonsiNiguse/elearning-platform/',
+    githubUrl: 'https://github.com/NabonsiNiguse/E-learning',
     demoUrl:   null,
     image:     null,
   },
@@ -206,7 +206,7 @@ export const PROJECTS_DATA: ProjectApiData[] = [
       'Admin panel for inventory and order fulfillment management',
       'Paginated product listings with category filtering and search',
     ],
-    githubUrl: 'https://github.com/NabonsiNiguse/ecommerce-app/',
+    githubUrl: 'https://github.com/NabonsiNiguse/ethio-ecommerce',
     demoUrl:   null,
     image:     null,
   },
@@ -222,7 +222,7 @@ export const PROJECTS_DATA: ProjectApiData[] = [
       'React admin UI for user search, suspension, and role assignment',
       'Audit log of authentication events and permission changes',
     ],
-    githubUrl: 'https://github.com/NabonsiNiguse/user-management-system/',
+    githubUrl: 'https://github.com/NabonsiNiguse/user_managment',
     demoUrl:   null,
     image:     null,
   },
@@ -238,12 +238,11 @@ export const PROJECTS_DATA: ProjectApiData[] = [
       'Responsive layout with intersection-observer scroll reveals',
       'Accessible: skip links, ARIA labels, focus-visible states throughout',
     ],
-    githubUrl: 'https://github.com/NabonsiNiguse/',
+    githubUrl: 'https://github.com/NabonsiNiguse/portfolio',
     demoUrl:   null,
     image:     null,
   },
 ];
-
 // ─────────────────────────────────────────────────────────────────────────────
 // CERTIFICATIONS
 // ─────────────────────────────────────────────────────────────────────────────
