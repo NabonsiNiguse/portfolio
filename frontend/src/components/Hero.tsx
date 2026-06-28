@@ -199,17 +199,16 @@ $ npm run dev
             Get in Touch
           </Button>
 
-          <Button
-            variant="ghost"
-            size="lg"
-            as="a"
-            href={PERSONAL.cvPath}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Download size={15} />
-            Resume
-          </Button>
+        <a
+          href={PERSONAL.cvPath}
+          download="Nabonsi_Niguse_Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium rounded-xl border border-white/[0.08] bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] hover:border-white/20 transition-all duration-200 h-11"
+        >
+          <Download size={15} />
+          Resume
+        </a>
         </div>
 
         {/* Social links */}

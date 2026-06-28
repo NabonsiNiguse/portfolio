@@ -97,7 +97,7 @@ export const PERSONAL = {
   email:      'nabonsin@gmail.com',
   github:     'https://github.com/NabonsiNiguse',
   linkedin:   'https://www.linkedin.com/in/nabonsi-niguse-8144953a8/',
-  cvPath:     '/cv-nabonsi-niguse.pdf',
+  cvPath:     '/Nabonsi_Niguse_Resume.pdf',
   badges:     ['Computer Science Student', 'Remote Ready'],
 } as const;
 
