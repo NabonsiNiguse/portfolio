@@ -134,7 +134,8 @@ export function Navbar() {
         {/* ── CTA + mobile toggle ────────────────────────────────── */}
         <div className="flex items-center gap-2">
           <a
-            href={`mailto:${PERSONAL.email}`}
+            href="#contact"
+            onClick={e => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}
             className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl
               bg-emerald-500/10 text-emerald-400 border border-emerald-500/[0.22]
               hover:bg-emerald-500/[0.16] hover:border-emerald-500/35
@@ -202,8 +203,11 @@ export function Navbar() {
 
           <li className="pt-2 border-t border-white/[0.06]">
             <a
-              href={`mailto:${PERSONAL.email}`}
-              onClick={() => setMenuOpen(false)}
+              href="#contact"
+              onClick={() => {
+                setMenuOpen(false);
+                setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 50);
+              }}
               className="block w-full text-center px-4 py-3 text-sm font-semibold rounded-xl
                 bg-emerald-500/10 text-emerald-400 border border-emerald-500/[0.22]
                 hover:bg-emerald-500/[0.16] transition-colors"
